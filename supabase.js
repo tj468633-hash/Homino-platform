@@ -630,4 +630,49 @@ function subscribeToOrders(callback) {
 
 console.log(
     "HOMINO Supabase connected"
+);mino-service-requests")
+        .on(
+            "postgres_changes",
+            {
+                event: "*",
+                schema: "public",
+                table: "service_requests"
+            },
+            payload => {
+
+                callback(payload);
+
+            }
+        )
+        .subscribe();
+}
+
+
+// ==============================
+// Realtime سفارش‌ها
+// ==============================
+
+function subscribeToOrders(callback) {
+
+    return supabaseClient
+        .channel("homino-orders")
+        .on(
+            "postgres_changes",
+            {
+                event: "*",
+                schema: "public",
+                table: "orders"
+            },
+            payload => {
+
+                callback(payload);
+
+            }
+        )
+        .subscribe();
+}
+
+
+console.log(
+    "HOMINO Supabase connected"
 );
