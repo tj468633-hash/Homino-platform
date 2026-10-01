@@ -1,410 +1,1642 @@
-const supabaseClient = window.supabase.createClient(
-    window.HOMINO_CONFIG.SUPABASE_URL,
-    window.HOMINO_CONFIG.SUPABASE_ANON_KEY
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="theme-color" content="#5b4bdb">
+<title>هومینو | همه‌چیز برای خانه، یکجا</title>
+
+<style>
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+margin:0;
+font-family:Tahoma,Arial,sans-serif;
+background:#f7f7fb;
+color:#20212a;
+line-height:1.8
+}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+a{text-decoration:none;color:inherit}
+
+.container{
+width:min(1180px,92%);
+margin:auto
+}
+
+.top{
+background:#17162a;
+color:white;
+font-size:12px;
+padding:7px 0
+}
+.top .container{
+display:flex;
+justify-content:space-between
+}
+
+header{
+position:sticky;
+top:0;
+z-index:20;
+background:#ffffffee;
+backdrop-filter:blur(15px);
+border-bottom:1px solid #eee
+}
+
+.nav{
+min-height:70px;
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:15px
+}
+
+.brand{
+display:flex;
+align-items:center;
+gap:9px;
+font-size:24px;
+font-weight:900;
+color:#5142cc
+}
+
+.logo{
+width:42px;
+height:42px;
+display:grid;
+place-items:center;
+border-radius:14px;
+background:linear-gradient(135deg,#6d5ce7,#4938bd);
+color:#fff;
+font-size:25px;
+box-shadow:0 8px 25px #5b4bdb35
+}
+
+.navlinks{
+display:flex;
+gap:22px;
+font-size:14px;
+color:#555
+}
+
+.navlinks a:hover{color:#5142cc}
+
+.actions{
+display:flex;
+gap:8px
+}
+
+.btn{
+border:0;
+border-radius:13px;
+padding:10px 16px;
+font-weight:bold;
+transition:.2s
+}
+
+.btn:hover{transform:translateY(-2px)}
+
+.primary{
+background:#5b4bdb;
+color:white;
+box-shadow:0 8px 22px #5b4bdb30
+}
+
+.light{
+background:#efedff;
+color:#5142cc
+}
+
+.outline{
+background:white;
+border:1px solid #ddd;
+color:#444
+}
+
+.hero{
+padding:65px 0;
+background:
+radial-gradient(circle at 80% 15%,#c7c0ff 0,transparent 35%),
+linear-gradient(135deg,#f1efff,#fff 55%,#fff7ed)
+}
+
+.hero-grid{
+display:grid;
+grid-template-columns:1.05fr .95fr;
+gap:40px;
+align-items:center
+}
+
+.badge{
+display:inline-block;
+padding:6px 13px;
+border-radius:999px;
+background:#e8e5ff;
+color:#5142cc;
+font-size:12px;
+font-weight:bold
+}
+
+h1{
+font-size:clamp(34px,5vw,58px);
+line-height:1.25;
+margin:18px 0
+}
+
+.hero p{
+font-size:17px;
+color:#666
+}
+
+.search{
+display:flex;
+gap:8px;
+background:white;
+padding:9px;
+border-radius:20px;
+box-shadow:0 18px 50px #5142cc15;
+margin-top:22px
+}
+
+.search input{
+flex:1;
+border:0;
+outline:0;
+padding:10px
+}
+
+.hero-card{
+background:white;
+border:1px solid #eee;
+border-radius:28px;
+padding:27px;
+box-shadow:0 25px 70px #2d245d18
+}
+
+.stats{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:12px
+}
+
+.stat{
+padding:18px;
+border-radius:17px;
+background:#f8f7fd;
+border:1px solid #eee
+}
+
+.stat strong{
+display:block;
+font-size:20px
+}
+
+.stat span{
+font-size:12px;
+color:#777
+}
+
+section{padding:65px 0}
+
+.head{
+display:flex;
+justify-content:space-between;
+align-items:end;
+margin-bottom:25px
+}
+
+.head h2{
+margin:0;
+font-size:29px
+}
+
+.muted{color:#777}
+
+.categories{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:15px
+}
+
+.category{
+background:white;
+border:1px solid #eee;
+border-radius:20px;
+padding:21px;
+min-height:140px;
+transition:.2s
+}
+
+.category:hover{
+transform:translateY(-4px);
+box-shadow:0 15px 35px #0000000d
+}
+
+.category .icon{
+font-size:32px
+}
+
+.category strong{
+display:block
+}
+
+.category small{
+color:#888
+}
+
+.filters{
+display:flex;
+gap:9px;
+flex-wrap:wrap;
+margin-bottom:20px
+}
+
+.filters input,
+.filters select{
+padding:11px;
+border:1px solid #ddd;
+border-radius:12px;
+background:white;
+outline:0
+}
+
+.specialists{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:17px
+}
+
+.specialist{
+background:white;
+border:1px solid #eee;
+border-radius:22px;
+padding:20px
+}
+
+.sp-head{
+display:flex;
+gap:12px;
+align-items:center
+}
+
+.avatar{
+width:58px;
+height:58px;
+display:grid;
+place-items:center;
+border-radius:18px;
+background:linear-gradient(135deg,#ece9ff,#f7d9c1);
+font-size:27px
+}
+
+.sp-head h3{
+margin:0;
+font-size:17px
+}
+
+.sp-head p{
+margin:2px 0;
+font-size:12px;
+color:#777
+}
+
+.stars{
+color:#f0a000
+}
+
+.tags{
+display:flex;
+gap:6px;
+flex-wrap:wrap;
+margin:14px 0
+}
+
+.tag{
+background:#f2f1fa;
+color:#5142cc;
+padding:4px 9px;
+border-radius:999px;
+font-size:11px
+}
+
+.sp-footer{
+display:flex;
+justify-content:space-between;
+align-items:center;
+border-top:1px solid #eee;
+padding-top:13px
+}
+
+.steps{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:17px
+}
+
+.step{
+background:white;
+border:1px solid #eee;
+border-radius:21px;
+padding:22px
+}
+
+.number{
+width:40px;
+height:40px;
+display:grid;
+place-items:center;
+border-radius:12px;
+background:#5b4bdb;
+color:white;
+font-weight:bold
+}
+
+.dark{
+background:#17162a;
+color:white;
+border-radius:30px;
+padding:35px
+}
+
+.dark-grid{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:15px
+}
+
+.dark-card{
+background:#ffffff10;
+border:1px solid #ffffff18;
+border-radius:18px;
+padding:20px
+}
+
+.cta{
+background:linear-gradient(135deg,#5b4bdb,#8c7ff1);
+color:white;
+border-radius:30px;
+padding:40px
+}
+
+footer{
+background:#12111f;
+color:#ddd;
+padding:45px 0 25px
+}
+
+.footer-grid{
+display:grid;
+grid-template-columns:2fr 1fr 1fr 1fr;
+gap:30px
+}
+
+footer h3{color:white}
+footer a{
+display:block;
+color:#aaa;
+font-size:13px;
+margin:7px 0
+}
+
+.copy{
+border-top:1px solid #ffffff12;
+margin-top:25px;
+padding-top:18px;
+font-size:12px;
+color:#888
+}
+
+.modal{
+position:fixed;
+inset:0;
+z-index:50;
+display:none;
+align-items:center;
+justify-content:center;
+background:#11182799;
+padding:15px
+}
+
+.modal.show{display:flex}
+
+.modal-box{
+position:relative;
+width:min(570px,100%);
+max-height:90vh;
+overflow:auto;
+background:white;
+border-radius:25px;
+padding:25px
+}
+
+.close{
+position:absolute;
+left:15px;
+top:12px;
+border:0;
+background:#f1f1f4;
+border-radius:50%;
+width:35px;
+height:35px;
+font-size:20px
+}
+
+.form{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:12px
+}
+
+.field{
+display:flex;
+flex-direction:column;
+gap:5px
+}
+
+.full{grid-column:1/-1}
+
+.field input,
+.field select,
+.field textarea{
+border:1px solid #ddd;
+border-radius:12px;
+padding:11px;
+outline:0
+}
+
+.field textarea{
+min-height:100px
+}
+
+.notice{
+background:#f4f2ff;
+color:#5142cc;
+padding:11px;
+border-radius:12px;
+font-size:13px
+}
+
+.empty{
+grid-column:1/-1;
+text-align:center;
+padding:35px;
+background:white;
+border:1px dashed #ddd;
+border-radius:18px;
+color:#777
+}
+
+.toast{
+position:fixed;
+bottom:20px;
+left:20px;
+right:20px;
+max-width:420px;
+margin:auto;
+background:#17162a;
+color:white;
+padding:13px;
+border-radius:14px;
+text-align:center;
+display:none;
+z-index:100
+}
+
+@media(max-width:900px){
+.navlinks{display:none}
+.hero-grid{grid-template-columns:1fr}
+.categories{grid-template-columns:repeat(2,1fr)}
+.specialists{grid-template-columns:repeat(2,1fr)}
+.steps{grid-template-columns:repeat(2,1fr)}
+.footer-grid{grid-template-columns:1fr 1fr}
+}
+
+@media(max-width:600px){
+.top{font-size:10px}
+.nav{min-height:62px}
+.brand{font-size:20px}
+.logo{width:37px;height:37px}
+.actions .light{display:none}
+.hero{padding:42px 0}
+.search{flex-direction:column}
+.categories,
+.specialists,
+.steps,
+.dark-grid{
+grid-template-columns:1fr
+}
+.form{
+grid-template-columns:1fr
+}
+.full{grid-column:auto}
+.footer-grid{
+grid-template-columns:1fr
+}
+}
+</style>
+</head>
+
+<body>
+
+<div class="top">
+<div class="container">
+<span>هومینو؛ همه‌چیز برای خانه، یکجا</span>
+<span>خدمات خانه در سراسر ایران</span>
+</div>
+</div>
+
+<header>
+<div class="container nav">
+
+<a class="brand" href="#">
+<span class="logo">⌂</span>
+<span>هومینو</span>
+</a>
+
+<nav class="navlinks">
+<a href="#services">خدمات</a>
+<a href="#specialists">متخصص‌ها</a>
+<a href="#how">چطور کار می‌کند؟</a>
+<a href="#about">درباره ما</a>
+</nav>
+
+<div class="actions">
+<button class="btn light" onclick="openLogin()">ورود</button>
+<button class="btn primary" onclick="openRequest()">درخواست خدمت</button>
+</div>
+
+</div>
+</header>
+
+<section class="hero">
+<div class="container hero-grid">
+
+<div>
+
+<span class="badge">🏠 خدمات خانه، ساده‌تر از همیشه</span>
+
+<h1>
+متخصص مناسب خانه‌ات را
+<br>
+سریع پیدا کن.
+</h1>
+
+<p>
+از تعمیرات و نظافت تا باربری و نصب؛
+خدمتت را انتخاب کن، متخصص‌ها را ببین،
+مقایسه کن و درخواستت را ثبت کن.
+</p>
+
+<div class="search">
+<input
+id="searchInput"
+placeholder="مثلاً تعمیر کولر، لوله‌کشی، نظافت..."
+onkeydown="if(event.key==='Enter')searchServices()"
+>
+<button class="btn primary" onclick="searchServices()">
+جستجو 🔎
+</button>
+</div>
+
+<p style="font-size:13px">
+✓ ثبت درخواست آنلاین
+&nbsp;&nbsp;
+✓ جستجوی متخصص
+&nbsp;&nbsp;
+✓ پیگیری سفارش
+</p>
+
+</div>
+
+<div class="hero-card">
+
+<h2>مدیریت هوشمند خانه 🏡</h2>
+
+<p class="muted">
+خدمات، متخصص‌ها و درخواست‌هایت را در یکجا مدیریت کن.
+</p>
+
+<div class="stats">
+
+<div class="stat">
+<strong>۲۴/۷</strong>
+<span>ثبت درخواست</span>
+</div>
+
+<div class="stat">
+<strong>سراسری</strong>
+<span>قابل توسعه برای ایران</span>
+</div>
+
+<div class="stat">
+<strong>مقایسه</strong>
+<span>متخصص و خدمات</span>
+</div>
+
+<div class="stat">
+<strong>یادآوری</strong>
+<span>سرویس‌های آینده</span>
+</div>
+
+</div>
+
+</div>
+</div>
+</section>
+
+<section id="services">
+<div class="container">
+
+<div class="head">
+<div>
+<h2>خدمات هومینو</h2>
+<span class="muted">خدمات از دیتابیس دریافت می‌شوند</span>
+</div>
+
+<button class="btn outline" onclick="loadData()">↻ بروزرسانی</button>
+</div>
+
+<div id="categories" class="categories">
+<div class="empty">در حال دریافت خدمات...</div>
+</div>
+
+</div>
+</section>
+
+<section id="specialists" style="background:#f0eff7">
+<div class="container">
+
+<div class="head">
+<div>
+<h2>متخصص‌های هومینو</h2>
+<span class="muted">متخصص‌های ثبت‌شده در سامانه</span>
+</div>
+
+<button class="btn primary" onclick="openSpecialist()">
+ثبت‌نام متخصص
+</button>
+</div>
+
+<div class="filters">
+
+<input
+id="specialistSearch"
+placeholder="جستجوی متخصص..."
+oninput="filterSpecialists()"
+>
+
+<select id="cityFilter" onchange="filterSpecialists()">
+<option value="">همه شهرها</option>
+</select>
+
+</div>
+
+<div id="specialists" class="specialists">
+<div class="empty">در حال دریافت متخصص‌ها...</div>
+</div>
+
+</div>
+</section>
+
+<section id="how">
+<div class="container">
+
+<div class="head">
+<div>
+<h2>چطور کار می‌کند؟</h2>
+<span class="muted">چهار قدم ساده</span>
+</div>
+</div>
+
+<div class="steps">
+
+<div class="step">
+<div class="number">۱</div>
+<h3>خدمت را انتخاب کن</h3>
+<p class="muted">نوع خدمت مورد نیازت را مشخص کن.</p>
+</div>
+
+<div class="step">
+<div class="number">۲</div>
+<h3>متخصص را پیدا کن</h3>
+<p class="muted">متخصص‌های مرتبط را مشاهده کن.</p>
+</div>
+
+<div class="step">
+<div class="number">۳</div>
+<h3>درخواست ثبت کن</h3>
+<p class="muted">زمان و توضیحات کارت را ثبت کن.</p>
+</div>
+
+<div class="step">
+<div class="number">۴</div>
+<h3>سفارش را پیگیری کن</h3>
+<p class="muted">وضعیت درخواست را مشاهده کن.</p>
+</div>
+
+</div>
+</div>
+</section>
+
+<section id="about">
+<div class="container">
+
+<div class="dark">
+
+<span class="badge" style="background:#ffffff15;color:white">
+HOMINO
+</span>
+
+<h2>خانه فقط یک آدرس نیست.</h2>
+
+<p style="color:#bbb">
+در آینده در هومینو می‌توانی خانه‌ها،
+وسایل، خدمات انجام‌شده و سرویس‌های آینده را مدیریت کنی.
+</p>
+
+<div class="dark-grid">
+
+<div class="dark-card">
+<h2>🏠</h2>
+<strong>خانه‌های من</strong>
+</div>
+
+<div class="dark-card">
+<h2>🛠️</h2>
+<strong>سابقه خدمات</strong>
+</div>
+
+<div class="dark-card">
+<h2>⏰</h2>
+<strong>یادآوری سرویس</strong>
+</div>
+
+</div>
+</div>
+</div>
+</section>
+
+<section>
+<div class="container">
+
+<div class="cta">
+
+<h2>برای خانه‌ات درخواست ثبت کن</h2>
+
+<p>
+نوع خدمت، شهر و توضیحات را وارد کن.
+</p>
+
+<button
+class="btn"
+style="background:white;color:#5142cc"
+onclick="openRequest()">
+شروع درخواست ←
+</button>
+
+</div>
+
+</div>
+</section>
+
+<footer>
+<div class="container">
+
+<div class="footer-grid">
+
+<div>
+<h3>هومینو</h3>
+<p style="color:#999">
+پلتفرم هوشمند خدمات و مدیریت خانه.
+</p>
+</div>
+
+<div>
+<h3>خدمات</h3>
+<a href="#services">تعمیرات</a>
+<a href="#services">نظافت</a>
+<a href="#services">باربری</a>
+</div>
+
+<div>
+<h3>کاربران</h3>
+<a href="#" onclick="openLogin();return false">ورود</a>
+<a href="#" onclick="openRequest();return false">ثبت درخواست</a>
+</div>
+
+<div>
+<h3>متخصص‌ها</h3>
+<a href="#" onclick="openSpecialist();return false">
+ثبت‌نام متخصص
+</a>
+<a href="#specialists">مشاهده متخصص‌ها</a>
+</div>
+
+</div>
+
+<div class="copy">
+© 2026 HOMINO — همه حقوق محفوظ است.
+</div>
+
+</div>
+</footer>
+
+<!-- درخواست خدمت -->
+
+<div id="requestModal" class="modal">
+<div class="modal-box">
+
+<button class="close" onclick="closeModal('requestModal')">×</button>
+
+<h2>ثبت درخواست خدمت</h2>
+
+<p class="muted">
+اطلاعات درخواستت را وارد کن.
+</p>
+
+<div class="notice">
+برای ثبت درخواست باید وارد حساب کاربری باشی.
+</div>
+
+<form onsubmit="submitRequest(event)">
+
+<div class="form">
+
+<label class="field">
+<span>خدمت</span>
+<select id="requestService" required>
+<option value="">انتخاب خدمت</option>
+</select>
+</label>
+
+<label class="field">
+<span>شهر</span>
+<select id="requestCity" required>
+<option value="">انتخاب شهر</option>
+</select>
+</label>
+
+<label class="field">
+<span>زمان پیشنهادی</span>
+<input id="requestDate" type="datetime-local">
+</label>
+
+<label class="field">
+<span>بودجه تقریبی</span>
+<input id="budget" type="number" placeholder="تومان">
+</label>
+
+<label class="field full">
+<span>توضیحات</span>
+<textarea id="description" placeholder="مشکل یا درخواست خود را توضیح دهید"></textarea>
+</label>
+
+<label class="field full">
+<span>آدرس</span>
+<textarea id="address" placeholder="آدرس محل انجام خدمت"></textarea>
+</label>
+
+</div>
+
+<button class="btn primary" style="width:100%;margin-top:15px">
+ثبت درخواست
+</button>
+
+</form>
+
+</div>
+</div>
+
+<!-- ورود -->
+
+<div id="loginModal" class="modal">
+<div class="modal-box">
+
+<button class="close" onclick="closeModal('loginModal')">×</button>
+
+<h2>ورود به هومینو</h2>
+
+<p class="muted">
+ایمیل خود را وارد کنید تا لینک ورود برایتان ارسال شود.
+</p>
+
+<form onsubmit="login(event)">
+
+<div class="field">
+<span>ایمیل</span>
+<input id="email" type="email" required placeholder="you@example.com">
+</div>
+
+<button class="btn primary" style="width:100%;margin-top:15px">
+ارسال لینک ورود
+</button>
+
+</form>
+
+</div>
+</div>
+
+<!-- متخصص -->
+
+<div id="specialistModal" class="modal">
+<div class="modal-box">
+
+<button class="close" onclick="closeModal('specialistModal')">×</button>
+
+<h2>ثبت‌نام متخصص</h2>
+
+<form onsubmit="registerSpecialist(event)">
+
+<div class="form">
+
+<label class="field full">
+<span>نام یا نام کسب‌وکار</span>
+<input id="specialistName" required placeholder="مثلاً تعمیرات علی">
+</label>
+
+<label class="field">
+<span>شماره تماس</span>
+<input id="phone" required placeholder="09...">
+</label>
+
+<label class="field">
+<span>سال تجربه</span>
+<input id="experience" type="number" min="0">
+</label>
+
+<label class="field full">
+<span>درباره شما</span>
+<textarea id="bio" placeholder="تخصص و سابقه کاری"></textarea>
+</label>
+
+</div>
+
+<button class="btn primary" style="width:100%;margin-top:15px">
+ثبت اطلاعات متخصص
+</button>
+
+</form>
+
+</div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+
+<script>
+let db=null;
+let services=[];
+let cities=[];
+let specialists=[];
+
+/* اتصال مستقیم به Supabase */
+
+function connectDB(){
+
+if(!window.HOMINO_CONFIG){
+console.error("config.js پیدا نشد");
+return false;
+}
+
+if(!window.supabase){
+console.error("Supabase CDN بارگذاری نشده");
+return false;
+}
+
+db=window.supabase.createClient(
+window.HOMINO_CONFIG.SUPABASE_URL,
+window.HOMINO_CONFIG.SUPABASE_ANON_KEY
 );
 
-// گرفتن کاربر فعلی
-async function getCurrentUser() {
-    const {
-        data: { user },
-        error
-    } = await supabaseClient.auth.getUser();
-
-    if (error) {
-        console.error("خطا در دریافت کاربر:", error);
-        return null;
-    }
-
-    return user;
+return true;
 }
 
-// گرفتن پروفایل کاربر
-async function getMyProfile() {
-    const user = await getCurrentUser();
+/* پیام */
 
-    if (!user) return null;
+function showToast(text){
 
-    const { data, error } = await supabaseClient
-        .from("profiles")
-        .select("*")
-        .eq("id", user.id)
-        .single();
+const el=document.getElementById("toast");
 
-    if (error) {
-        console.error("خطا در دریافت پروفایل:", error);
-        return null;
-    }
+el.textContent=text;
+el.style.display="block";
 
-    return data;
+clearTimeout(window.toastTimer);
+
+window.toastTimer=setTimeout(()=>{
+el.style.display="none";
+},3500);
+
 }
 
-// دریافت دسته‌بندی‌ها
-async function getCategories() {
-    const { data, error } = await supabaseClient
-        .from("service_categories")
-        .select("*")
-        .order("name");
+/* مودال */
 
-    if (error) {
-        console.error("خطا در دسته‌بندی‌ها:", error);
-        return [];
-    }
-
-    return data || [];
+function openModal(id){
+document.getElementById(id).classList.add("show");
 }
 
-// دریافت خدمات
-async function getServices(categoryId = null) {
-    let query = supabaseClient
-        .from("services")
-        .select(`
-            *,
-            service_categories (
-                id,
-                name
-            )
-        `)
-        .order("name");
-
-    if (categoryId) {
-        query = query.eq("category_id", categoryId);
-    }
-
-    const { data, error } = await query;
-
-    if (error) {
-        console.error("خطا در خدمات:", error);
-        return [];
-    }
-
-    return data || [];
+function closeModal(id){
+document.getElementById(id).classList.remove("show");
 }
 
-// دریافت شهرها
-async function getCities() {
-    const { data, error } = await supabaseClient
-        .from("cities")
-        .select("*")
-        .order("name");
-
-    if (error) {
-        console.error("خطا در شهرها:", error);
-        return [];
-    }
-
-    return data || [];
+function openRequest(){
+openModal("requestModal");
+fillForms();
 }
 
-// جستجوی متخصص‌ها
-async function searchSpecialists(serviceId = null, cityId = null) {
-    let query = supabaseClient
-        .from("specialists")
-        .select(`
-            *,
-            profiles (
-                id,
-                full_name,
-                phone,
-                avatar_url
-            ),
-            specialist_services (
-                service_id,
-                price_from,
-                price_to,
-                services (
-                    id,
-                    name
-                )
-            ),
-            specialist_cities (
-                city_id,
-                cities (
-                    id,
-                    name
-                )
-            )
-        `)
-        .eq("status", "approved");
-
-    const { data, error } = await query;
-
-    if (error) {
-        console.error("خطا در متخصص‌ها:", error);
-        return [];
-    }
-
-    let specialists = data || [];
-
-    if (serviceId) {
-        specialists = specialists.filter(specialist =>
-            specialist.specialist_services?.some(
-                item => item.service_id === serviceId
-            )
-        );
-    }
-
-    if (cityId) {
-        specialists = specialists.filter(specialist =>
-            specialist.specialist_cities?.some(
-                item => item.city_id === cityId
-            )
-        );
-    }
-
-    return specialists;
+function openLogin(){
+openModal("loginModal");
 }
 
-// ایجاد درخواست خدمات
-async function createServiceRequest(requestData) {
-    const user = await getCurrentUser();
-
-    if (!user) {
-        throw new Error("ابتدا باید وارد حساب کاربری شوید.");
-    }
-
-    const { data, error } = await supabaseClient
-        .from("service_requests")
-        .insert({
-            customer_id: user.id,
-            ...requestData
-        })
-        .select()
-        .single();
-
-    if (error) {
-        console.error("خطا در ایجاد درخواست:", error);
-        throw error;
-    }
-
-    return data;
+function openSpecialist(){
+openModal("specialistModal");
 }
 
-// دریافت خانه‌های کاربر
-async function getMyHomes() {
-    const user = await getCurrentUser();
+/* دریافت خدمات */
 
-    if (!user) return [];
+async function loadServices(){
 
-    const { data, error } = await supabaseClient
-        .from("homes")
-        .select("*")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false });
+if(!db)return;
 
-    if (error) {
-        console.error("خطا در خانه‌ها:", error);
-        return [];
-    }
+const box=document.getElementById("categories");
 
-    return data || [];
+const result=await db
+.from("services")
+.select("id,name,description,category_id")
+.order("name");
+
+if(result.error){
+
+console.error(result.error);
+
+box.innerHTML=
+'<div class="empty">خطا در دریافت خدمات از دیتابیس.</div>';
+
+return;
 }
 
-// افزودن خانه
-async function addHome(homeData) {
-    const user = await getCurrentUser();
+services=result.data||[];
 
-    if (!user) {
-        throw new Error("ابتدا وارد حساب کاربری شوید.");
-    }
+if(!services.length){
 
-    const { data, error } = await supabaseClient
-        .from("homes")
-        .insert({
-            user_id: user.id,
-            ...homeData
-        })
-        .select()
-        .single();
+box.innerHTML=
+'<div class="empty">هنوز خدمتی ثبت نشده است.</div>';
 
-    if (error) {
-        console.error("خطا در افزودن خانه:", error);
-        throw error;
-    }
-
-    return data;
+return;
 }
 
-// دریافت پروفایل متخصص
-async function getMySpecialistProfile() {
-    const user = await getCurrentUser();
+const icons=["🔧","❄️","⚡","🚿","🧹","🚚","🪟","🎨"];
 
-    if (!user) return null;
+box.innerHTML="";
 
-    const { data, error } = await supabaseClient
-        .from("specialists")
-        .select("*")
-        .eq("profile_id", user.id)
-        .maybeSingle();
+services.forEach((service,index)=>{
 
-    if (error) {
-        console.error("خطا در پروفایل متخصص:", error);
-        return null;
-    }
+const item=document.createElement("div");
 
-    return data;
+item.className="category";
+
+item.innerHTML=`
+<div class="icon">${icons[index%icons.length]}</div>
+<strong>${safe(service.name)}</strong>
+<small>${safe(service.description||"خدمات تخصصی خانه")}</small>
+`;
+
+item.onclick=()=>{
+openRequest();
+setTimeout(()=>{
+document.getElementById("requestService").value=service.id;
+},100);
+};
+
+box.appendChild(item);
+
+});
+
+fillForms();
+
 }
 
-// ثبت‌نام به عنوان متخصص
-async function registerAsSpecialist(specialistData) {
-    const user = await getCurrentUser();
+/* شهرها */
 
-    if (!user) {
-        throw new Error("ابتدا وارد حساب کاربری شوید.");
-    }
+async function loadCities(){
 
-    const { data, error } = await supabaseClient
-        .from("specialists")
-        .insert({
-            profile_id: user.id,
-            ...specialistData,
-            status: "pending"
-        })
-        .select()
-        .single();
+if(!db)return;
 
-    if (error) {
-        console.error("خطا در ثبت متخصص:", error);
-        throw error;
-    }
+const result=await db
+.from("cities")
+.select("id,name")
+.order("name");
 
-    return data;
+if(result.error){
+
+console.error(result.error);
+return;
 }
 
-// افزودن تخصص و قیمت
-async function addSpecialistService(serviceId, priceFrom, priceTo) {
-    const specialist = await getMySpecialistProfile();
+cities=result.data||[];
 
-    if (!specialist) {
-        throw new Error("پروفایل متخصص پیدا نشد.");
-    }
+const select=document.getElementById("cityFilter");
 
-    const { data, error } = await supabaseClient
-        .from("specialist_services")
-        .insert({
-            specialist_id: specialist.id,
-            service_id: serviceId,
-            price_from: priceFrom,
-            price_to: priceTo
-        })
-        .select()
-        .single();
+select.innerHTML='<option value="">همه شهرها</option>';
 
-    if (error) {
-        console.error("خطا در افزودن تخصص:", error);
-        throw error;
-    }
+cities.forEach(city=>{
 
-    return data;
+select.innerHTML+=`
+<option value="${city.id}">
+${safe(city.name)}
+</option>
+`;
+
+});
+
+fillForms();
+
 }
 
-// افزودن یا حذف علاقه‌مندی
-async function toggleFavorite(specialistId) {
-    const user = await getCurrentUser();
+/* متخصص‌ها */
 
-    if (!user) {
-        throw new Error("ابتدا وارد حساب کاربری شوید.");
-    }
+async function loadSpecialists(){
 
-    const { data: existing } = await supabaseClient
-        .from("favorite_specialists")
-        .select("id")
-        .eq("user_id", user.id)
-        .eq("specialist_id", specialistId)
-        .maybeSingle();
+if(!db)return;
 
-    if (existing) {
-        await supabaseClient
-            .from("favorite_specialists")
-            .delete()
-            .eq("id", existing.id);
+const box=document.getElementById("specialists");
 
-        return false;
-    }
+const result=await db
+.from("specialists")
+.select(`
+id,
+name,
+business_name,
+bio,
+phone,
+status,
+specialist_services(
+service_id,
+price_from,
+services(id,name)
+),
+specialist_cities(
+city_id,
+cities(id,name)
+)
+`)
+.eq("status","approved");
 
-    const { error } = await supabaseClient
-        .from("favorite_specialists")
-        .insert({
-            user_id: user.id,
-            specialist_id: specialistId
-        });
+if(result.error){
 
-    if (error) {
-        console.error("خطا در علاقه‌مندی:", error);
-        throw error;
-    }
+console.error(result.error);
 
-    return true;
+box.innerHTML=
+'<div class="empty">متخصصی دریافت نشد.</div>';
+
+return;
 }
 
-// دریافت اعلان‌ها
-async function getMyNotifications() {
-    const user = await getCurrentUser();
+specialists=result.data||[];
 
-    if (!user) return [];
+renderSpecialists(specialists);
 
-    const { data, error } = await supabaseClient
-        .from("notifications")
-        .select("*")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false });
-
-    if (error) {
-        console.error("خطا در اعلان‌ها:", error);
-        return [];
-    }
-
-    return data || [];
 }
 
-// خوانده‌شدن اعلان
-async function markNotificationRead(notificationId) {
-    const { error } = await supabaseClient
-        .from("notifications")
-        .update({
-            is_read: true
-        })
-        .eq("id", notificationId);
+function renderSpecialists(list){
 
-    if (error) {
-        console.error("خطا در اعلان:", error);
-        throw error;
-    }
+const box=document.getElementById("specialists");
+
+if(!list.length){
+
+box.innerHTML=
+'<div class="empty">متخصصی برای نمایش پیدا نشد.</div>';
+
+return;
 }
 
-// اتصال لحظه‌ای به درخواست‌ها
-function subscribeToRequests(callback) {
-    return supabaseClient
-        .channel("homino-service-requests")
-        .on(
-            "postgres_changes",
-            {
-                event: "*",
-                schema: "public",
-                table: "service_requests"
-            },
-            payload => {
-                callback(payload);
-            }
-        )
-        .subscribe();
+box.innerHTML="";
+
+list.slice(0,30).forEach(sp=>{
+
+const name=
+sp.business_name||
+sp.name||
+"متخصص هومینو";
+
+const city=
+(sp.specialist_cities||[])
+.map(x=>x.cities?.name)
+.filter(Boolean)
+.join("، ");
+
+const serviceNames=
+(sp.specialist_services||[])
+.map(x=>x.services?.name)
+.filter(Boolean)
+.slice(0,3);
+
+const card=document.createElement("div");
+
+card.className="specialist";
+
+card.innerHTML=`
+
+<div class="sp-head">
+
+<div class="avatar">🛠️</div>
+
+<div>
+
+<h3>${safe(name)}</h3>
+
+<p>${safe(city||"فعال در هومینو")}</p>
+
+<div class="stars">★★★★★</div>
+
+</div>
+
+</div>
+
+<div class="tags">
+
+${
+serviceNames.length
+?
+serviceNames.map(x=>`
+<span class="tag">${safe(x)}</span>
+`).join("")
+:
+'<span class="tag">خدمات خانه</span>'
 }
 
-// اتصال لحظه‌ای به سفارش‌ها
-function subscribeToOrders(callback) {
-    return supabaseClient
-        .channel("homino-orders")
-        .on(
-            "postgres_changes",
-            {
-                event: "*",
-                schema: "public",
-                table: "orders"
-            },
-            payload => {
-                callback(payload);
-            }
-        )
-        .subscribe();
+</div>
+
+<div class="sp-footer">
+
+<span class="muted">متخصص هومینو</span>
+
+<button
+class="btn light"
+onclick="openRequest()">
+درخواست خدمت
+</button>
+
+</div>
+`;
+
+box.appendChild(card);
+
+});
+
 }
 
-console.log("HOMINO Supabase connected");
+/* فیلتر متخصص */
+
+function filterSpecialists(){
+
+const q=
+document.getElementById("specialistSearch")
+.value
+.trim()
+.toLowerCase();
+
+const city=
+document.getElementById("cityFilter")
+.value;
+
+const result=specialists.filter(sp=>{
+
+const text=JSON.stringify(sp).toLowerCase();
+
+const cityOK=
+!city ||
+(sp.specialist_cities||[])
+.some(x=>String(x.city_id)===String(city));
+
+return (!q||text.includes(q))&&cityOK;
+
+});
+
+renderSpecialists(result);
+
+}
+
+/* فرم‌ها */
+
+function fillForms(){
+
+const serviceSelect=
+document.getElementById("requestService");
+
+const citySelect=
+document.getElementById("requestCity");
+
+if(serviceSelect){
+
+serviceSelect.innerHTML=
+'<option value="">انتخاب خدمت</option>';
+
+services.forEach(s=>{
+
+serviceSelect.innerHTML+=`
+<option value="${s.id}">
+${safe(s.name)}
+</option>
+`;
+
+});
+
+}
+
+if(citySelect){
+
+citySelect.innerHTML=
+'<option value="">انتخاب شهر</option>';
+
+cities.forEach(c=>{
+
+citySelect.innerHTML+=`
+<option value="${c.id}">
+${safe(c.name)}
+</option>
+`;
+
+});
+
+}
+
+}
+
+/* ورود */
+
+async function login(event){
+
+event.preventDefault();
+
+if(!db){
+
+showToast("اتصال دیتابیس برقرار نیست.");
+return;
+}
+
+const email=
+document.getElementById("email")
+.value
+.trim();
+
+const result=await db.auth.signInWithOtp({
+
+email:email,
+
+options:{
+emailRedirectTo:window.location.href
+}
+
+});
+
+if(result.error){
+
+console.error(result.error);
+
+showToast("ارسال لینک ورود انجام نشد.");
+
+return;
+}
+
+closeModal("loginModal");
+
+showToast("لینک ورود به ایمیل شما ارسال شد ✉️");
+
+}
+
+/* ثبت درخواست */
+
+async function submitRequest(event){
+
+event.preventDefault();
+
+if(!db){
+
+showToast("اتصال دیتابیس برقرار نیست.");
+return;
+}
+
+const userResult=
+await db.auth.getUser();
+
+const user=userResult.data.user;
+
+if(!user){
+
+closeModal("requestModal");
+openLogin();
+
+showToast("ابتدا وارد حساب خود شوید.");
+
+return;
+}
+
+const data={
+
+customer_id:user.id,
+
+service_id:
+document.getElementById("requestService").value,
+
+city_id:
+document.getElementById("requestCity").value,
+
+description:
+document.getElementById("description").value,
+
+address:
+document.getElementById("address").value,
+
+scheduled_at:
+document.getElementById("requestDate").value||null,
+
+budget:
+document.getElementById("budget").value
+?
+Number(document.getElementById("budget").value)
+:
+null,
+
+status:"new"
+
+};
+
+if(!data.service_id||!data.city_id){
+
+showToast("خدمت و شهر را انتخاب کنید.");
+
+return;
+}
+
+const result=await db
+.from("service_requests")
+.insert(data);
+
+if(result.error){
+
+console.error(result.error);
+
+showToast("ثبت درخواست انجام نشد.");
+
+return;
+}
+
+closeModal("requestModal");
+
+showToast("درخواست شما با موفقیت ثبت شد ✅");
+
+}
+
+/* ثبت متخصص */
+
+async function registerSpecialist(event){
+
+event.preventDefault();
+
+if(!db){
+
+showToast("اتصال دیتابیس برقرار نیست.");
+return;
+}
+
+const userResult=
+await db.auth.getUser();
+
+const user=userResult.data.user;
+
+if(!user){
+
+closeModal("specialistModal");
+
+openLogin();
+
+showToast("ابتدا وارد حساب شوید.");
+
+return;
+}
+
+const data={
+
+profile_id:user.id,
+
+name:
+document.getElementById("specialistName").value,
+
+phone:
+document.getElementById("phone").value,
+
+years_experience:
+Number(document.getElementById("experience").value||0),
+
+bio:
+document.getElementById("bio").value,
+
+status:"pending"
+
+};
+
+const result=await db
+.from("specialists")
+.insert(data);
+
+if(result.error){
+
+console.error(result.error);
+
+showToast("ثبت متخصص انجام نشد.");
+
+return;
+}
+
+closeModal("specialistModal");
+
+showToast("اطلاعات متخصص ثبت شد ✅");
+
+loadSpecialists();
+
+}
+
+/* جستجوی خدمات */
+
+function searchServices(){
+
+const query=
+document.getElementById("searchInput")
+.value
+.trim()
+.toLowerCase();
+
+document
+.getElementById("services")
+.scrollIntoView({
+behavior:"smooth"
+});
+
+setTimeout(()=>{
+
+document
+.querySelectorAll(".category")
+.forEach(card=>{
+
+card.style.display=
+!query||
+card.innerText.toLowerCase().includes(query)
+?
+"block"
+:
+"none";
+
+});
+
+},300);
+
+}
+
+/* امنیت نمایش متن */
+
+function safe(value){
+
+return String(value??"")
+.replace(/&/g,"&amp;")
+.replace(/</g,"&lt;")
+.replace(/>/g,"&gt;")
+.replace(/"/g,"&quot;")
+.replace(/'/g,"&#039;");
+
+}
+
+/* بارگذاری همه */
+
+async function loadData(){
+
+if(!connectDB()){
+
+showToast("config.js یا اتصال Supabase مشکل دارد.");
+
+return;
+}
+
+await Promise.all([
+loadServices(),
+loadCities(),
+loadSpecialists()
+]);
+
+}
+
+/* شروع */
+
+document.addEventListener("DOMContentLoaded",()=>{
+
+loadData();
+
+});
+
+</script>
+
+</body>
+</html>
