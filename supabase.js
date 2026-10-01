@@ -3,8 +3,13 @@ const supabaseClient = window.supabase.createClient(
     window.HOMINO_CONFIG.SUPABASE_ANON_KEY
 );
 
-// گرفتن کاربر فعلی
+
+// ==============================
+// کاربر فعلی
+// ==============================
+
 async function getCurrentUser() {
+
     const {
         data: { user },
         error
@@ -18,8 +23,13 @@ async function getCurrentUser() {
     return user;
 }
 
-// گرفتن پروفایل کاربر
+
+// ==============================
+// پروفایل کاربر
+// ==============================
+
 async function getMyProfile() {
+
     const user = await getCurrentUser();
 
     if (!user) return null;
@@ -38,8 +48,13 @@ async function getMyProfile() {
     return data;
 }
 
-// دریافت دسته‌بندی‌ها
+
+// ==============================
+// دسته‌بندی‌ها
+// ==============================
+
 async function getCategories() {
+
     const { data, error } = await supabaseClient
         .from("service_categories")
         .select("*")
@@ -53,8 +68,13 @@ async function getCategories() {
     return data || [];
 }
 
-// دریافت خدمات
+
+// ==============================
+// خدمات
+// ==============================
+
 async function getServices(categoryId = null) {
+
     let query = supabaseClient
         .from("services")
         .select(`
@@ -80,8 +100,13 @@ async function getServices(categoryId = null) {
     return data || [];
 }
 
-// دریافت شهرها
+
+// ==============================
+// شهرها
+// ==============================
+
 async function getCities() {
+
     const { data, error } = await supabaseClient
         .from("cities")
         .select("*")
@@ -95,8 +120,16 @@ async function getCities() {
     return data || [];
 }
 
-// جستجوی متخصص‌ها
-async function searchSpecialists(serviceId = null, cityId = null) {
+
+// ==============================
+// متخصص‌ها
+// ==============================
+
+async function searchSpecialists(
+    serviceId = null,
+    cityId = null
+) {
+
     let query = supabaseClient
         .from("specialists")
         .select(`
@@ -126,41 +159,68 @@ async function searchSpecialists(serviceId = null, cityId = null) {
         `)
         .eq("status", "approved");
 
+
     const { data, error } = await query;
 
+
     if (error) {
-        console.error("خطا در متخصص‌ها:", error);
+
+        console.error(
+            "خطا در دریافت متخصص‌ها:",
+            error
+        );
+
         return [];
     }
 
+
     let specialists = data || [];
 
+
     if (serviceId) {
-        specialists = specialists.filter(specialist =>
-            specialist.specialist_services?.some(
-                item => item.service_id === serviceId
-            )
+
+        specialists = specialists.filter(
+            specialist =>
+                specialist.specialist_services?.some(
+                    item =>
+                        item.service_id === serviceId
+                )
         );
+
     }
 
+
     if (cityId) {
-        specialists = specialists.filter(specialist =>
-            specialist.specialist_cities?.some(
-                item => item.city_id === cityId
-            )
+
+        specialists = specialists.filter(
+            specialist =>
+                specialist.specialist_cities?.some(
+                    item =>
+                        item.city_id === cityId
+                )
         );
+
     }
+
 
     return specialists;
 }
 
+
+// ==============================
 // ایجاد درخواست خدمات
+// ==============================
+
 async function createServiceRequest(requestData) {
+
     const user = await getCurrentUser();
 
     if (!user) {
-        throw new Error("ابتدا باید وارد حساب کاربری شوید.");
+        throw new Error(
+            "ابتدا باید وارد حساب کاربری شوید."
+        );
     }
+
 
     const { data, error } = await supabaseClient
         .from("service_requests")
@@ -171,41 +231,72 @@ async function createServiceRequest(requestData) {
         .select()
         .single();
 
+
     if (error) {
-        console.error("خطا در ایجاد درخواست:", error);
+
+        console.error(
+            "خطا در ایجاد درخواست:",
+            error
+        );
+
         throw error;
     }
+
 
     return data;
 }
 
-// دریافت خانه‌های کاربر
+
+// ==============================
+// خانه‌های کاربر
+// ==============================
+
 async function getMyHomes() {
+
     const user = await getCurrentUser();
 
     if (!user) return [];
+
 
     const { data, error } = await supabaseClient
         .from("homes")
         .select("*")
         .eq("user_id", user.id)
-        .order("created_at", { ascending: false });
+        .order("created_at", {
+            ascending: false
+        });
+
 
     if (error) {
-        console.error("خطا در خانه‌ها:", error);
+
+        console.error(
+            "خطا در خانه‌ها:",
+            error
+        );
+
         return [];
     }
+
 
     return data || [];
 }
 
+
+// ==============================
 // افزودن خانه
+// ==============================
+
 async function addHome(homeData) {
+
     const user = await getCurrentUser();
 
     if (!user) {
-        throw new Error("ابتدا وارد حساب کاربری شوید.");
+
+        throw new Error(
+            "ابتدا وارد حساب کاربری شوید."
+        );
     }
+
 
     const { data, error } = await supabaseClient
         .from("homes")
@@ -216,19 +307,32 @@ async function addHome(homeData) {
         .select()
         .single();
 
+
     if (error) {
-        console.error("خطا در افزودن خانه:", error);
+
+        console.error(
+            "خطا در افزودن خانه:",
+            error
+        );
+
         throw error;
     }
+
 
     return data;
 }
 
-// دریافت پروفایل متخصص
+
+// ==============================
+// پروفایل متخصص
+// ==============================
+
 async function getMySpecialistProfile() {
+
     const user = await getCurrentUser();
 
     if (!user) return null;
+
 
     const { data, error } = await supabaseClient
         .from("specialists")
@@ -236,21 +340,39 @@ async function getMySpecialistProfile() {
         .eq("profile_id", user.id)
         .maybeSingle();
 
+
     if (error) {
-        console.error("خطا در پروفایل متخصص:", error);
+
+        console.error(
+            "خطا در پروفایل متخصص:",
+            error
+        );
+
         return null;
     }
+
 
     return data;
 }
 
-// ثبت‌نام به عنوان متخصص
-async function registerAsSpecialist(specialistData) {
+
+// ==============================
+// ثبت‌نام متخصص
+// ==============================
+
+async function registerAsSpecialist(
+    specialistData
+) {
+
     const user = await getCurrentUser();
 
     if (!user) {
-        throw new Error("ابتدا وارد حساب کاربری شوید.");
+
+        throw new Error(
+            "ابتدا وارد حساب کاربری شوید."
+        );
     }
+
 
     const { data, error } = await supabaseClient
         .from("specialists")
@@ -262,57 +384,102 @@ async function registerAsSpecialist(specialistData) {
         .select()
         .single();
 
+
     if (error) {
-        console.error("خطا در ثبت متخصص:", error);
+
+        console.error(
+            "خطا در ثبت متخصص:",
+            error
+        );
+
         throw error;
     }
+
 
     return data;
 }
 
-// افزودن تخصص و قیمت
-async function addSpecialistService(serviceId, priceFrom, priceTo) {
-    const specialist = await getMySpecialistProfile();
+
+// ==============================
+// تخصص و قیمت متخصص
+// ==============================
+
+async function addSpecialistService(
+    serviceId,
+    priceFrom,
+    priceTo
+) {
+
+    const specialist =
+        await getMySpecialistProfile();
+
 
     if (!specialist) {
-        throw new Error("پروفایل متخصص پیدا نشد.");
+
+        throw new Error(
+            "پروفایل متخصص پیدا نشد."
+        );
     }
 
-    const { data, error } = await supabaseClient
-        .from("specialist_services")
-        .insert({
-            specialist_id: specialist.id,
-            service_id: serviceId,
-            price_from: priceFrom,
-            price_to: priceTo
-        })
-        .select()
-        .single();
+
+    const { data, error } =
+        await supabaseClient
+            .from("specialist_services")
+            .insert({
+                specialist_id: specialist.id,
+                service_id: serviceId,
+                price_from: priceFrom,
+                price_to: priceTo
+            })
+            .select()
+            .single();
+
 
     if (error) {
-        console.error("خطا در افزودن تخصص:", error);
+
+        console.error(
+            "خطا در افزودن تخصص:",
+            error
+        );
+
         throw error;
     }
+
 
     return data;
 }
 
-// افزودن یا حذف علاقه‌مندی
-async function toggleFavorite(specialistId) {
+
+// ==============================
+// علاقه‌مندی
+// ==============================
+
+async function toggleFavorite(
+    specialistId
+) {
+
     const user = await getCurrentUser();
 
+
     if (!user) {
-        throw new Error("ابتدا وارد حساب کاربری شوید.");
+
+        throw new Error(
+            "ابتدا وارد حساب کاربری شوید."
+        );
     }
 
-    const { data: existing } = await supabaseClient
-        .from("favorite_specialists")
-        .select("id")
-        .eq("user_id", user.id)
-        .eq("specialist_id", specialistId)
-        .maybeSingle();
+
+    const { data: existing } =
+        await supabaseClient
+            .from("favorite_specialists")
+            .select("id")
+            .eq("user_id", user.id)
+            .eq("specialist_id", specialistId)
+            .maybeSingle();
+
 
     if (existing) {
+
         await supabaseClient
             .from("favorite_specialists")
             .delete()
@@ -321,58 +488,102 @@ async function toggleFavorite(specialistId) {
         return false;
     }
 
-    const { error } = await supabaseClient
-        .from("favorite_specialists")
-        .insert({
-            user_id: user.id,
-            specialist_id: specialistId
-        });
+
+    const { error } =
+        await supabaseClient
+            .from("favorite_specialists")
+            .insert({
+                user_id: user.id,
+                specialist_id: specialistId
+            });
+
 
     if (error) {
-        console.error("خطا در علاقه‌مندی:", error);
+
+        console.error(
+            "خطا در علاقه‌مندی:",
+            error
+        );
+
         throw error;
     }
+
 
     return true;
 }
 
-// دریافت اعلان‌ها
+
+// ==============================
+// اعلان‌ها
+// ==============================
+
 async function getMyNotifications() {
+
     const user = await getCurrentUser();
 
     if (!user) return [];
 
-    const { data, error } = await supabaseClient
-        .from("notifications")
-        .select("*")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false });
+
+    const { data, error } =
+        await supabaseClient
+            .from("notifications")
+            .select("*")
+            .eq("user_id", user.id)
+            .order("created_at", {
+                ascending: false
+            });
+
 
     if (error) {
-        console.error("خطا در اعلان‌ها:", error);
+
+        console.error(
+            "خطا در اعلان‌ها:",
+            error
+        );
+
         return [];
     }
+
 
     return data || [];
 }
 
-// خوانده‌شدن اعلان
-async function markNotificationRead(notificationId) {
-    const { error } = await supabaseClient
-        .from("notifications")
-        .update({
-            is_read: true
-        })
-        .eq("id", notificationId);
+
+// ==============================
+// خوانده شدن اعلان
+// ==============================
+
+async function markNotificationRead(
+    notificationId
+) {
+
+    const { error } =
+        await supabaseClient
+            .from("notifications")
+            .update({
+                is_read: true
+            })
+            .eq("id", notificationId);
+
 
     if (error) {
-        console.error("خطا در اعلان:", error);
+
+        console.error(
+            "خطا در اعلان:",
+            error
+        );
+
         throw error;
     }
 }
 
-// اتصال لحظه‌ای به درخواست‌ها
+
+// ==============================
+// Realtime درخواست‌ها
+// ==============================
+
 function subscribeToRequests(callback) {
+
     return supabaseClient
         .channel("homino-service-requests")
         .on(
@@ -383,14 +594,21 @@ function subscribeToRequests(callback) {
                 table: "service_requests"
             },
             payload => {
+
                 callback(payload);
+
             }
         )
         .subscribe();
 }
 
-// اتصال لحظه‌ای به سفارش‌ها
+
+// ==============================
+// Realtime سفارش‌ها
+// ==============================
+
 function subscribeToOrders(callback) {
+
     return supabaseClient
         .channel("homino-orders")
         .on(
@@ -401,10 +619,15 @@ function subscribeToOrders(callback) {
                 table: "orders"
             },
             payload => {
+
                 callback(payload);
+
             }
         )
         .subscribe();
 }
 
-console.log("HOMINO Supabase connected");
+
+console.log(
+    "HOMINO Supabase connected"
+);
